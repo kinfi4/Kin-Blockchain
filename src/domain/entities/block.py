@@ -19,7 +19,7 @@ class Block:
 
     def get_hash(self) -> str:
         transaction_str = json.dumps(self.to_dict())
-        return hashlib.sha224(transaction_str).hexdigest()
+        return hashlib.sha224(transaction_str.encode()).hexdigest()
 
     def to_dict(self) -> dict:
         return {

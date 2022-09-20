@@ -8,7 +8,7 @@ class BlockService:
     def __init__(self, blocks_list: list[Block] = None) -> None:
         self._block_list = blocks_list if blocks_list else []
 
-    def add_block(self, proof: int, transactions: list[Transaction]) -> BlockIndex:
+    def add_block(self, proof: int, transactions: list[Transaction]) -> Block:
         new_block_index = BlockIndex(len(self._block_list) + 1)
         block = Block(
             index=new_block_index,
@@ -20,7 +20,7 @@ class BlockService:
 
         self._block_list.append(block)
 
-        return new_block_index
+        return block
 
     @property
     def last_block(self) -> Block:
