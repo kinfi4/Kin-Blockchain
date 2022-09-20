@@ -13,6 +13,6 @@ class TransactionService:
             raise RuntimeError(f'Sorry but there are no transaction in the list!')
 
         transactions_to_return = self._transactions
-        self._transactions.clear()
+        self._transactions = []
 
         return transactions_to_return
