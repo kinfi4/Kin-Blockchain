@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Transaction:
+class TransactionEntity:
     sender: str
     receiver: str
     amount: float

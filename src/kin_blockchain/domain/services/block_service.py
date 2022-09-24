@@ -1,16 +1,16 @@
 from time import time
 
-from src.domain.entities.block import Block, BlockIndex
-from src.domain.entities.transaction import Transaction
+from kin_blockchain.domain.entities.block import BlockEntity, BlockIndex
+from kin_blockchain.domain.entities.transaction import TransactionEntity
 
 
 class BlockService:
-    def __init__(self, blocks_list: list[Block] = None) -> None:
+    def __init__(self, blocks_list: list[BlockEntity] = None) -> None:
         self._block_list = blocks_list if blocks_list else []
 
-    def add_block(self, proof: int, transactions: list[Transaction]) -> Block:
+    def add_block(self, proof: int, transactions: list[TransactionEntity]) -> BlockEntity:
         new_block_index = BlockIndex(len(self._block_list) + 1)
-        block = Block(
+        block = BlockEntity(
             index=new_block_index,
             timestamp=time(),
             transactions=transactions,
@@ -23,11 +23,11 @@ class BlockService:
         return block
 
     @property
-    def last_block(self) -> Block:
+    def last_block(self) -> BlockEntity:
         return self._block_list[-1]
 
-    def get_block(self, block_idx: BlockIndex) -> Block:
+    def get_block(self, block_idx: BlockIndex) -> BlockEntity:
         return self._block_list[block_idx]
 
-    def get_blockchain(self) -> list[Block]:
+    def get_blockchain(self) -> list[BlockEntity]:
         return self._block_list

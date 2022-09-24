@@ -1,14 +1,16 @@
-from src.domain.entities.transaction import Transaction
+from kin_blockchain.domain.entities.transaction import TransactionEntity
 
 
 class TransactionService:
-    def __init__(self, transaction_list: list[Transaction] = None) -> None:
+    def __init__(self, transaction_list: list[TransactionEntity] = None) -> None:
         self._transactions = transaction_list if transaction_list else []
 
-    def add_transaction(self, transaction: Transaction) -> None:
+    def add_transaction(self, transaction: TransactionEntity) -> TransactionEntity:
         self._transactions.append(transaction)
 
-    def flush_transactions(self) -> list[Transaction]:
+        return transaction
+
+    def flush_transactions(self) -> list[TransactionEntity]:
         if not self._transactions:
             raise RuntimeError(f'Sorry but there are no transaction in the list!')
 

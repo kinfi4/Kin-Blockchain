@@ -2,14 +2,14 @@ from time import time
 from uuid import uuid4
 from random import randint
 
-from src.blockchain import Blockchain
-from src.domain.entities.block import Block, BlockIndex
-from src.domain.entities.transaction import Transaction
-from src.domain.services import BlockService, TransactionService
+from kin_blockchain.domain.blockchain import Blockchain
+from kin_blockchain.domain.entities.block import BlockEntity, BlockIndex
+from kin_blockchain.domain.entities.transaction import TransactionEntity
+from kin_blockchain.domain.services import BlockService, TransactionService
 
 
-def create_genesis_block() -> Block:
-    return Block(
+def create_genesis_block() -> BlockEntity:
+    return BlockEntity(
         index=BlockIndex(0),
         previous_block_hash='makarov',
         timestamp=time(),
@@ -37,8 +37,8 @@ def find_proof(bc: Blockchain) -> int:
     return n
 
 
-def build_dump_transaction() -> Transaction:
-    return Transaction(
+def build_dump_transaction() -> TransactionEntity:
+    return TransactionEntity(
         receiver=uuid4().hex,
         sender=uuid4().hex,
         amount=randint(10, 10000),

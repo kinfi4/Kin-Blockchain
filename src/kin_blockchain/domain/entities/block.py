@@ -3,19 +3,19 @@ import hashlib
 from dataclasses import dataclass
 from typing import NewType
 
-from src.domain.entities.transaction import Transaction
+from kin_blockchain.domain.entities.transaction import TransactionEntity
 
 
 BlockIndex = NewType('BlockIndex', int)
 
 
 @dataclass(frozen=True)
-class Block:
+class BlockEntity:
     index: BlockIndex
     previous_block_hash: str
     timestamp: float
     proof: int
-    transactions: list[Transaction]
+    transactions: list[TransactionEntity]
 
     def get_hash(self) -> str:
         transaction_str = json.dumps(self.to_dict())
