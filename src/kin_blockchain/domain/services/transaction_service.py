@@ -2,8 +2,8 @@ from kin_blockchain.domain.entities.transaction import TransactionEntity
 
 
 class TransactionService:
-    def __init__(self, transaction_list: list[TransactionEntity] = None) -> None:
-        self._transactions = transaction_list if transaction_list else []
+    def __init__(self) -> None:
+        self._transactions = []
 
     def add_transaction(self, transaction: TransactionEntity) -> TransactionEntity:
         self._transactions.append(transaction)

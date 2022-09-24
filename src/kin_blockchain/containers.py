@@ -4,25 +4,27 @@ from kin_blockchain.domain.blockchain import Blockchain
 from kin_blockchain.domain.services import BlockService, TransactionService, MiningService
 
 
-class Services(containers.Container):
-    block_service: BlockService = providers.Singleton(
+class Services(containers.DeclarativeContainer):
+    block_service: providers.Singleton[BlockService] = providers.Singleton(
         BlockService
     )
-    transaction_service: TransactionService = providers.Singleton(
+    transaction_service: providers.Singleton[TransactionService ]= providers.Singleton(
         TransactionService
     )
 
 
-class Container(containers.Container):
-    services = providers.DependenciesContainer()
+class Container(containers.DeclarativeContainer):
+    services: providers.Container[Services] = providers.Container(
+        Services
+    )
 
-    blockchain: Blockchain = providers.Singleton(
+    blockchain: providers.Singleton[Blockchain] = providers.Singleton(
         Blockchain,
         block_service=services.block_service,
         transaction_service=services.transaction_service,
     )
 
-    mining_service: MiningService = providers.Singleton(
+    mining_service: providers.Singleton[MiningService] = providers.Singleton(
         MiningService,
         blockchain=blockchain,
     )

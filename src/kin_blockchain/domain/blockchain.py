@@ -7,7 +7,11 @@ from kin_blockchain.domain.services import TransactionService, BlockService
 
 
 class Blockchain:
-    def __init__(self, block_service: BlockService, transaction_service: TransactionService):
+    def __init__(
+        self,
+        block_service: BlockService,
+        transaction_service: TransactionService,
+    ):
         self._tr_service = transaction_service
         self._bl_service = block_service
 

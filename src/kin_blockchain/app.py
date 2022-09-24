@@ -13,7 +13,7 @@ def create_container() -> Container:
     return container
 
 
-def create_app() -> FastAPI:
+def create_app(*args, **kwargs) -> FastAPI:
     fastapi_app = FastAPI(
         title='Kinfi4 Blockchain',
     )

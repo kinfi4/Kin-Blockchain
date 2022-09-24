@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  blockchain-api:
+    build:
+      context: .
+      dockerfile: ./etc/api/Dockerfile
+    image: blockchain-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/kin_blockchain:/app/kin_blockchain
