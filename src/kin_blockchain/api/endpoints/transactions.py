@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
 from dependency_injector.wiring import inject, Provide
 
 from kin_blockchain.api.models import TransactionModel
@@ -18,4 +17,4 @@ def create_transaction(
 ):
     added_transaction = transaction_service.add_transaction(transaction.to_domain())
 
-    return JSONResponse(added_transaction.to_dict())
+    return TransactionModel.from_domain(added_transaction)

@@ -14,3 +14,11 @@ class TransactionModel(BaseModel):
             receiver=self.receiver,
             amount=self.amount,
         )
+
+    @classmethod
+    def from_domain(cls, transaction_entity: TransactionEntity) -> "TransactionModel":
+        return cls(
+            sender=transaction_entity.sender,
+            receiver=transaction_entity.receiver,
+            amount=transaction_entity.amount,
+        )

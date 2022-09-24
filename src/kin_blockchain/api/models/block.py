@@ -19,3 +19,13 @@ class BlockModel(BaseModel):
             proof=self.proof,
             transactions=[tr.to_domain() for tr in self.transactions]
         )
+
+    @classmethod
+    def from_domain(cls, block_entity: BlockEntity) -> "BlockModel":
+        return cls(
+            index=block_entity.index,
+            previous_block_hash=block_entity.previous_block_hash,
+            timestamp=block_entity.timestamp,
+            proof=block_entity.proof,
+            transactions=[TransactionModel.from_domain(tr) for tr in block_entity.transactions],
+        )
