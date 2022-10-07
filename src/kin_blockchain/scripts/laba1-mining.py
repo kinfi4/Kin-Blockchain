@@ -2,39 +2,20 @@ from time import time
 from uuid import uuid4
 from random import randint
 
+from kin_blockchain.domain.services import BlockService, TransactionService, MiningService
 from kin_blockchain.domain.blockchain import Blockchain
-from kin_blockchain.domain.entities.block import BlockEntity, BlockIndex
-from kin_blockchain.domain.entities.transaction import TransactionEntity
-from kin_blockchain.domain.services import BlockService, TransactionService
-
-
-def create_genesis_block() -> BlockEntity:
-    return BlockEntity(
-        index=BlockIndex(0),
-        previous_block_hash='makarov',
-        timestamp=time(),
-        transactions=[],
-        proof=3082002
-    )
+from kin_blockchain.domain.utils import mine_genesis_block
+from kin_blockchain.domain.entities import TransactionEntity
 
 
 def init_blockchain() -> Blockchain:
-    genesis_block = create_genesis_block()
-    block_service = BlockService([genesis_block])
+    block_service = BlockService(genesis_block=mine_genesis_block())
 
     transaction_service = TransactionService()
 
     bc = Blockchain(block_service=block_service, transaction_service=transaction_service)
 
     return bc
-
-
-def find_proof(bc: Blockchain) -> int:
-    n = 0
-    while not bc.validate_proof(n):
-        n += 1
-
-    return n
 
 
 def build_dump_transaction() -> TransactionEntity:
@@ -51,13 +32,13 @@ def create_block_in_blockchain(bc: Blockchain, transactions_amount: int) -> None
     for tr in transactions:
         bc.add_transaction(tr)
 
-    proof = find_proof(bc)
-
-    bc.create_block(proof)
+    block = mine_service.mine_new_block()
+    bc.create_block(block)
 
 
 if __name__ == '__main__':
     blockchain = init_blockchain()
+    mine_service = MiningService(blockchain)
 
     create_block_in_blockchain(blockchain, 10)
     create_block_in_blockchain(blockchain, 8)
@@ -65,7 +46,7 @@ if __name__ == '__main__':
 
     blocks = blockchain.get_blockchain()
 
-    for block in blocks:
-        print(block.previous_block_hash, end=' -> ')
+    for b in blocks:
+        print(b.previous_block_hash, end=' -> ')
 
     print('...')

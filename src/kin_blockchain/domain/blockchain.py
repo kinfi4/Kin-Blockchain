@@ -1,7 +1,7 @@
-import hashlib
+from time import time
+from typing import Optional
 
-from kin_blockchain.domain.entities.block import BlockIndex, BlockEntity
-from kin_blockchain.domain.entities.transaction import TransactionEntity
+from kin_blockchain.domain.entities import BlockIndex, BlockEntity, TransactionEntity
 from kin_blockchain.domain.exceptions import TransactionInvalid, ProofValidationFailed
 from kin_blockchain.domain.services import TransactionService, BlockService
 
@@ -23,21 +23,26 @@ class Blockchain:
 
         return BlockIndex(self._bl_service.last_block.index + 1)
 
-    def create_block(self, proof: int) -> BlockEntity:
-        if not self.validate_proof(proof):
-            raise ProofValidationFailed(f'Could not create a block with {proof=}, proof did not pass validation')
+    def create_block(self, block: BlockEntity) -> BlockEntity:
+        if not block.get_hash()[-2:] == "08":
+            raise ProofValidationFailed(f'Could not create a block with {block.nonce=}, nonce did not pass validation')
 
-        transactions = self._tr_service.flush_transactions()
+        self._tr_service.flush_transactions()
 
-        return self._bl_service.add_block(proof, transactions)
+        return self._bl_service.add_block(block)
 
-    def validate_proof(self, proof: int) -> bool:
-        last_block_proof = self._bl_service.last_block.proof
+    def validate_proof(self, nonce: int) -> tuple[bool, Optional[BlockEntity]]:
+        block_to_hash = BlockEntity(
+            index=BlockIndex(self._bl_service.last_block.index + 1),
+            timestamp=time(),
+            previous_block_hash=self._bl_service.last_block.get_hash(),
+            transactions=self._tr_service.get_transactions(),
+            nonce=nonce,
+        )
+        hash_result = block_to_hash.get_hash()
+        nonce_check_result = hash_result[-2:] == "08"
 
-        to_hash = f'{last_block_proof}{proof}'.encode()
-        hash_result = hashlib.sha256(to_hash).hexdigest()
-
-        return hash_result[-2:] == "08"
+        return nonce_check_result, block_to_hash if nonce_check_result else None
 
     def get_blockchain(self) -> list[BlockEntity]:
         return self._bl_service.get_blockchain()

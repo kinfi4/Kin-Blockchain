@@ -14,7 +14,10 @@ class TransactionService:
         if not self._transactions:
             raise RuntimeError(f'Sorry but there are no transaction in the list!')
 
-        transactions_to_return = self._transactions
+        transactions_to_return = self.get_transactions()
         self._transactions = []
 
         return transactions_to_return
+
+    def get_transactions(self) -> list[TransactionEntity]:
+        return self._transactions
