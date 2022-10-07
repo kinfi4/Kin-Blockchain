@@ -18,8 +18,6 @@ def mine_block(
     blockchain: Blockchain = Depends(Provide[Container.blockchain]),
     transaction_service: TransactionService = Depends(Provide[Container.services.transaction_service])
 ):
-    nonce = mining_service.mine_new_block()
-
     transaction_reward = TransactionEntity(
         sender='0',
         receiver=miner_address,
@@ -27,6 +25,7 @@ def mine_block(
     )
     transaction_service.add_transaction(transaction_reward)
 
-    new_block = blockchain.create_block(nonce)
+    block = mining_service.mine_new_block()
+    new_block = blockchain.create_block(block)
 
     return BlockModel.from_domain(new_block)

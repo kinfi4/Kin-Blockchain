@@ -19,8 +19,6 @@ def create_app(*args, **kwargs) -> FastAPI:
     )
 
     fastapi_app.containers = create_container()
-    fastapi_app.include_router(endpoints.tr_router)
-    fastapi_app.include_router(endpoints.bl_router)
-    fastapi_app.include_router(endpoints.mine_router)
+    fastapi_app.include_router(endpoints.router, prefix='/api')
 
     return fastapi_app

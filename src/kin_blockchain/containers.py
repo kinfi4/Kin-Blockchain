@@ -2,11 +2,13 @@ from dependency_injector import containers, providers
 
 from kin_blockchain.domain.blockchain import Blockchain
 from kin_blockchain.domain.services import BlockService, TransactionService, MiningService
+from kin_blockchain.domain.utils import mine_genesis_block
 
 
 class Services(containers.DeclarativeContainer):
     block_service: providers.Singleton[BlockService] = providers.Singleton(
-        BlockService
+        BlockService,
+        genesis_block=mine_genesis_block(),
     )
     transaction_service: providers.Singleton[TransactionService ]= providers.Singleton(
         TransactionService

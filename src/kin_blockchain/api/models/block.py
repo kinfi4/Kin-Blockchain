@@ -10,6 +10,7 @@ class BlockModel(BaseModel):
     timestamp: float
     nonce: int
     transactions: list[TransactionModel]
+    hash: str
 
     def to_domain(self) -> BlockEntity:
         return BlockEntity(
@@ -28,4 +29,5 @@ class BlockModel(BaseModel):
             timestamp=block_entity.timestamp,
             nonce=block_entity.nonce,
             transactions=[TransactionModel.from_domain(tr) for tr in block_entity.transactions],
+            hash=block_entity.get_hash(),
         )
