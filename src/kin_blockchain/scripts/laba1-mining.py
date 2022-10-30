@@ -1,8 +1,8 @@
-from time import time
 from uuid import uuid4
 from random import randint
 
-from kin_blockchain.domain.services import BlockService, TransactionService, MiningService
+from kin_blockchain.api.mining_service import MiningService
+from kin_blockchain.domain.services import BlockService, TransactionService
 from kin_blockchain.domain.blockchain import Blockchain
 from kin_blockchain.domain.utils import mine_genesis_block
 from kin_blockchain.domain.entities import TransactionEntity

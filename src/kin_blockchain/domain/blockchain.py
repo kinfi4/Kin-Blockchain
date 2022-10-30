@@ -3,7 +3,7 @@ from typing import Optional
 
 from kin_blockchain.domain.entities import BlockIndex, BlockEntity, TransactionEntity
 from kin_blockchain.domain.exceptions import TransactionInvalid, ProofValidationFailed
-from kin_blockchain.domain.services import TransactionService, BlockService
+from kin_blockchain.domain.services import TransactionService, BlockService, WalletService
 
 
 class Blockchain:
@@ -11,9 +11,11 @@ class Blockchain:
         self,
         block_service: BlockService,
         transaction_service: TransactionService,
-    ):
+        wallet_service: WalletService,
+    ) -> None:
         self._tr_service = transaction_service
         self._bl_service = block_service
+        self._wallet_service = wallet_service
 
     def add_transaction(self, transaction: TransactionEntity) -> BlockIndex:
         if not transaction.is_valid():
@@ -28,8 +30,11 @@ class Blockchain:
             raise ProofValidationFailed(f'Could not create a block with {block.nonce=}, nonce did not pass validation')
 
         self._tr_service.flush_transactions()
+        new_block = self._bl_service.add_block(block)
 
-        return self._bl_service.add_block(block)
+        self._transfer_previous_transactions()
+
+        return new_block
 
     def validate_proof(self, nonce: int) -> tuple[bool, Optional[BlockEntity]]:
         block_to_hash = BlockEntity(
@@ -46,3 +51,13 @@ class Blockchain:
 
     def get_blockchain(self) -> list[BlockEntity]:
         return self._bl_service.get_blockchain()
+
+    def _transfer_previous_transactions(self) -> None:
+        transactions = self._bl_service.get_block(BlockIndex(self._bl_service.last_block.index - 1)).transactions
+
+        for transaction in transactions:
+            self._wallet_service.make_transaction(
+                from_user_id=transaction.sender,
+                to_user_id=transaction.receiver,
+                amount=transaction.amount,
+            )

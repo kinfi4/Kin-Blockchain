@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
 from dependency_injector.wiring import inject, Provide
 
+from kin_blockchain.api.mining_service import MiningService
 from kin_blockchain.containers import Container
 from kin_blockchain.api.models import BlockModel
 from kin_blockchain.domain.blockchain import Blockchain
 from kin_blockchain.domain.entities import TransactionEntity
-from kin_blockchain.domain.services import MiningService, TransactionService
+from kin_blockchain.domain.services import TransactionService
 
 router = APIRouter(prefix='/mine')
 
@@ -21,7 +22,7 @@ def mine_block(
     transaction_reward = TransactionEntity(
         sender='0',
         receiver=miner_address,
-        amount=1
+        amount=3
     )
     transaction_service.add_transaction(transaction_reward)
 
