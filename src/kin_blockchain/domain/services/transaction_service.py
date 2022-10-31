@@ -1,12 +1,15 @@
 from kin_blockchain.domain.entities.transaction import TransactionEntity
+from kin_blockchain.infrastructure.repositories import IWalletRepository
 
 
 class TransactionService:
-    def __init__(self) -> None:
+    def __init__(self, wallet_repository: IWalletRepository) -> None:
         self._transactions = []
+        self._wallet_repository = wallet_repository
 
     def add_transaction(self, transaction: TransactionEntity) -> TransactionEntity:
         self._transactions.append(transaction)
+        self._wallet_repository.add_tokens_to_frozen_state(transaction.sender, transaction.amount)
 
         return transaction
 

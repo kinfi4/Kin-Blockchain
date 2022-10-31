@@ -22,7 +22,8 @@ class Services(containers.DeclarativeContainer):
         genesis_block=mine_genesis_block(),
     )
     transaction_service: providers.Singleton[TransactionService] = providers.Singleton(
-        TransactionService
+        TransactionService,
+        wallet_repository=repositories.wallet_repository,
     )
     wallet_service: providers.Singleton[WalletService] = providers.Singleton(
         WalletService,

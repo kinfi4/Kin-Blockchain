@@ -5,6 +5,10 @@ from kin_blockchain.domain.entities.wallet import WalletEntity
 
 class IWalletRepository(ABC):
     @abstractmethod
+    def add_tokens_to_frozen_state(self, user_id: str, amount: float) -> None:
+        pass
+
+    @abstractmethod
     def get_user_balance(self, user_id: str) -> float:
         pass
 
