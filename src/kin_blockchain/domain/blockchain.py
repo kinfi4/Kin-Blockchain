@@ -1,6 +1,10 @@
 from time import time
 from typing import Optional
+from urllib.parse import urlparse
 
+import requests
+
+from kin_blockchain.constants import IS_LOCAL
 from kin_blockchain.domain.entities import BlockIndex, BlockEntity, TransactionEntity
 from kin_blockchain.domain.exceptions import TransactionInvalid, ProofValidationFailed
 from kin_blockchain.domain.services import TransactionService, BlockService, WalletService
@@ -13,6 +17,7 @@ class Blockchain:
         transaction_service: TransactionService,
         wallet_service: WalletService,
     ) -> None:
+        self._registered_nodes = set()
         self._tr_service = transaction_service
         self._bl_service = block_service
         self._wallet_service = wallet_service
@@ -53,7 +58,7 @@ class Blockchain:
         return self._bl_service.get_blockchain()
 
     def _transfer_previous_transactions(self) -> None:
-        transactions = self._bl_service.get_block(BlockIndex(self._bl_service.last_block.index - 1)).transactions
+        transactions = self._bl_service.get_block(BlockIndex(self._bl_service.last_block.index)).transactions
 
         for transaction in transactions:
             self._wallet_service.make_transaction(
@@ -61,3 +66,39 @@ class Blockchain:
                 to_user_id=transaction.receiver,
                 amount=transaction.amount,
             )
+
+    def resolve_conflicts(self) -> bool:
+        max_chain_length = len(self._bl_service.get_blockchain())
+        exchanged_blockchain = False
+
+        for host in self._registered_nodes:
+            blockchain_url = f'http://{host}/api/blocks/full-blockchain'
+            blocks = requests.get(blockchain_url).json()
+
+            block_entities = [BlockEntity.from_dict(block) for block in blocks]
+
+            if len(blocks) > max_chain_length and self._is_chain_valid(block_entities):
+                self._bl_service.set_blockchain(block_entities)
+                max_chain_length = len(blocks)
+                exchanged_blockchain = True
+
+        return exchanged_blockchain
+
+    def register_node(self, nodes_url: list[str]):
+        for node_url in nodes_url:
+            parsed_host = urlparse(node_url).hostname  # if not is_local else 'host.docker.internal'
+            parsed_port = urlparse(node_url).port
+            self._registered_nodes.add(f'{parsed_host}:{parsed_port}')
+
+    def _is_chain_valid(self, blockchain: list[BlockEntity]) -> bool:
+        def _is_nonce_valid(block: BlockEntity, nonce: int) -> bool:
+            return block.nonce == nonce and block.get_hash()[-2:] == "08"
+
+        for block_idx in range(1, len(blockchain)):
+            if blockchain[block_idx - 1].get_hash() != blockchain[block_idx].previous_block_hash:
+                return False
+
+            if not _is_nonce_valid(blockchain[block_idx], blockchain[block_idx].nonce):
+                return False
+
+        return True

@@ -18,3 +18,6 @@ class BlockService:
 
     def get_blockchain(self) -> list[BlockEntity]:
         return self._block_list
+
+    def set_blockchain(self, blocks: list[BlockEntity]) -> None:
+        self._block_list = blocks

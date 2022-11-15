@@ -6,7 +6,28 @@ services:
       context: .
       dockerfile: ./etc/api/Dockerfile
     image: blockchain-api
+    environment:
+      - API_PORT=8000
     ports:
       - "8000:8000"
     volumes:
       - ./src/kin_blockchain:/app/kin_blockchain
+    networks:
+      - kin-blockchain
+
+  blockchain-api-2:
+    build:
+      context: .
+      dockerfile: ./etc/api/Dockerfile
+    image: blockchain-api
+    environment:
+      - API_PORT=8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./src/kin_blockchain:/app/kin_blockchain
+    networks:
+      - kin-blockchain
+
+networks:
+  kin-blockchain:

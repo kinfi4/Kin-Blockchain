@@ -1,6 +1,6 @@
 from time import time
 
-from kin_blockchain.domain.entities import BlockEntity, BlockIndex
+from kin_blockchain.domain.entities import BlockEntity, BlockIndex, TransactionEntity
 
 
 def mine_genesis_block() -> BlockEntity:
@@ -11,7 +11,13 @@ def mine_genesis_block() -> BlockEntity:
             index=BlockIndex(0),
             timestamp=time(),
             previous_block_hash='00000000000000',
-            transactions=[],
+            transactions=[
+                # TransactionEntity(
+                #     sender='00000',
+                #     receiver='00000',
+                #     amount=3.0,
+                # )
+            ],
             nonce=n,
         )
 
